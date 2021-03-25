@@ -8,6 +8,7 @@ import {
   ScrollView,
   Text,
   Modal,
+  ActivityIndicator,
 } from 'react-native';
 import ProPic from '../Components/ProPic';
 import Number from '../Components/Number';
@@ -37,33 +38,40 @@ class Profile extends React.Component {
     add: true,
     addingNumber: '',
     indexOfEdit: null,
+    oldCarNum: null,
+    danger: false,
   };
-  gettingNewnumber = e => this.setState({addingNumber: e});
-  modalMoveTogle = () =>
-    this.setState(Prev => {
-      return {inputActive: !this.state.inputActive};
-    });
-  closeModal = () => {
-    this.setState({showModal: false, add: true});
-    this.modalMoveTogle();
+  isContain = number => {
+    let t = this.state.cars.filter(e => e.carNum === number.toUpperCase());
+    return t.length === 0 ? true : false;
+    // return t.length;
   };
-  openModal = () => {
-    this.setState({showModal: true});
-  };
-  addNumber = () => {
-    this.setState({showModal: true});
+  carNumChecker = num => {
+    if (
+      num.length >= 7 &&
+      num.replace(/[^0-9]/g, '').length === 4 &&
+      this.isContain(num)
+    )
+      return true;
+    else return false;
   };
   dateFormatter = oldDate => {
-    const d = oldDate === 'new' ? new Date() : new Date(oldDate);
+    const today = new Date();
+    const d = new Date(
+      oldDate === 'new'
+        ? today.getTime() + 7 * 24 * 60 * 60 * 1000
+        : new Date(oldDate),
+    );
     const datestring =
       d.getFullYear() +
       '.' +
       ('0' + (d.getMonth() + 1)).slice(-2) +
       '.' +
-      ('0' + (oldDate === 'new' ? d.getDate() + 7 : d.getDate())).slice(-2);
+      ('0' + d.getDate()).slice(-2);
 
     return datestring;
   };
+
   componentDidMount() {
     let tmp = require('./db');
     tmp = tmp.map(e => {
@@ -75,6 +83,42 @@ class Profile extends React.Component {
     });
     this.setState({cars: tmp});
   }
+
+  gettingNewnumber = e => {
+    if (this.carNumChecker(e)) {
+      this.setState({addingNumber: e});
+      this.setState({danger: false});
+    } else this.setState({danger: true});
+  };
+
+  modalMoveUp = () => this.setState({inputActive: true});
+
+  modalMoveDown = () => this.setState({inputActive: false});
+
+  closeModal = () => {
+    this.setState({
+      showModal: false,
+      add: true,
+      oldCarNum: null,
+      danger: false,
+    });
+    this.modalMoveDown();
+  };
+
+  openModal = () => {
+    this.setState({showModal: true});
+    // this.setState(Prev => {
+    //   return {showModal: !Prev.showModal};
+    // });
+  };
+  openModalByEdit = (i, oldCarNum) => {
+    this.setState({add: false, indexOfEdit: i, oldCarNum});
+    console.log(oldCarNum);
+    this.openModal();
+  };
+
+  addNumber = () => this.setState({showModal: true});
+
   addItem = () => {
     const item = {
       carNum: this.state.addingNumber,
@@ -82,7 +126,7 @@ class Profile extends React.Component {
       state: false,
     };
     this.setState(Prev => {
-      return {cars: [item, ...this.state.cars]};
+      return {cars: [item, ...Prev.cars]};
     });
   };
   deleteItem = index => {
@@ -99,15 +143,10 @@ class Profile extends React.Component {
             );
             this.setState({cars: removed});
           },
-          // style: 'cancel',
         },
       ],
       {cancelable: false},
     );
-  };
-  openModalByEdit = i => {
-    this.setState({add: false, indexOfEdit: i});
-    this.openModal();
   };
 
   updateItem = () => {
@@ -116,70 +155,68 @@ class Profile extends React.Component {
     const l = this.state.cars.length;
     this.setState(Prev => {
       if (this.state.indexOfEdit === 0)
-        return {cars: [tmp, ...this.state.cars.slice(1, l)]};
+        return {cars: [tmp, ...Prev.cars.slice(1, l)]};
       else if (this.state.indexOfEdit === l - 1)
-        return {cars: [...this.state.cars.slice(0, l - 1), tmp]};
+        return {cars: [...Prev.cars.slice(0, l - 1), tmp]};
       else
         return {
           cars: [
-            ...this.state.cars.slice(0, this.state.indexOfEdit),
+            ...this.state.cars.slice(0, Prev.indexOfEdit),
             tmp,
-            ...this.state.cars.slice(this.state.indexOfEdit + 1, l),
+            ...this.state.cars.slice(Prev.indexOfEdit + 1, l),
           ],
         };
     });
   };
+  submitModal = () => {
+    this.state.add ? this.addItem() : this.updateItem();
+    this.closeModal();
+  };
+
   render() {
     return (
       <View style={styles.Container}>
+        {/* <ActivityIndicator size="large" color="#AF0065" /> */}
         <Modal
           onRequestClose={() => this.closeModal()}
           animationType="slide"
           visible={this.state.showModal}
           transparent={true}>
           <View
-            style={{
-              //flex: 1,
-              backgroundColor: 'rgba(0, 0, 0, 0.5)',
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: windowWidth,
-              height: windowHeight,
-            }}
+            style={styles.shadow}
             onStartShouldSetResponder={() => this.closeModal()}
           />
           <View
             style={[
               styles.ModalContainer,
-              this.state.inputActive ? styles.active : null,
+              this.state.inputActive && styles.active,
             ]}>
             <Text style={styles.ModalTitle}>
               ДУГААР{this.state.add ? ' НЭМЭХ' : ' ЗАСАХ'}
             </Text>
             <Input
+              danger={this.state.danger}
+              focus={true}
               title="Тээврийн хэрэгслийн дугаар"
+              placeHolder="00-00ААА"
               type="carNum"
-              onActive={this.modalMoveTogle}
+              value={this.state.oldCarNum}
+              onFocus={this.modalMoveUp}
               onChange={this.gettingNewnumber}
             />
             {this.state.add && (
               <View style={{alignItems: 'center'}}>
                 <Text style={styles.ModalTailbar}>
-                  Таны нэмсэн тээврийн хэрэгслийн дугаар
+                  {
+                    'Таны нэмсэн тээврийн хэрэгслийн дугаар\n 7 хоногын дараа уг жагсаалтаас\n устгагдах болно.'
+                  }
                 </Text>
-                <Text style={styles.ModalTailbar}>
-                  7 хоногын дараа уг жагсаалтаас
-                </Text>
-                <Text style={styles.ModalTailbar}>устгагдах болно.</Text>
               </View>
             )}
             <Button
+              disabled={this.state.danger}
               title={this.state.add ? 'БҮРТГҮҮЛЭХ' : 'ЗАСАХ'}
-              onClick={() => {
-                this.state.add ? this.addItem() : this.updateItem();
-                this.closeModal();
-              }}
+              onClick={() => this.submitModal()}
             />
           </View>
         </Modal>
@@ -195,20 +232,26 @@ class Profile extends React.Component {
           // showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContainer}
           style={styles.listContainerS2}>
-          {this.state.cars.map((e, i) => {
-            return (
-              <View key={e.carNum}>
-                <Number
-                  num={i + 1}
-                  date={e.date}
-                  carNum={e.carNum}
-                  state={e.state}
-                  deleteItem={this.deleteItem}
-                  openModalByEdit={this.openModalByEdit}
-                />
-              </View>
-            );
-          })}
+          {this.state.cars.length === 0 ? (
+            <Text style={{color: '#C0C0C0', width: '80%'}}>
+              Тээврийн хэрэгслийн дугаарын жагсаалт хоосон байна.
+            </Text>
+          ) : (
+            this.state.cars.map((e, i) => {
+              return (
+                <View key={e.carNum}>
+                  <Number
+                    num={i + 1}
+                    date={e.date}
+                    carNum={e.carNum}
+                    state={e.state}
+                    deleteItem={this.deleteItem}
+                    openModalByEdit={this.openModalByEdit}
+                  />
+                </View>
+              );
+            })
+          )}
         </ScrollView>
         <View style={styles.btnContainer}>
           <Button title="Дугаар нэмэх" onClick={this.openModal} />
@@ -251,9 +294,9 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   setting: {
-    width: 30,
-    height: 30,
-    // backgroundColor: 'red',
+    width: 40,
+    height: 40,
+    //backgroundColor: 'red',
     position: 'absolute',
     right: 30,
     top: 30,
@@ -283,6 +326,15 @@ const styles = StyleSheet.create({
   ModalTailbar: {
     color: '#BFBFBF',
     fontSize: 12,
+  },
+  shadow: {
+    //flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: windowWidth,
+    height: windowHeight,
   },
 });
 

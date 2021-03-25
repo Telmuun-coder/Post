@@ -6,34 +6,38 @@ import {
   Dimensions,
   TouchableOpacity,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {SwipeRow} from 'react-native-swipe-list-view';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
+const behindBtnFontSize = windowWidth < 410 ? 10 : 12;
 
 class Number extends React.Component {
   constructor(props) {
     super(props);
-    // this.rowRefs = new Map();
-    // this.refer = React.createRef();
+
     // this.state = {
-    //   // rightSwipe: new SwipeRow(),
+    //   opened: false,
     // };
   }
 
   render() {
-    // SwipeRow.handleRightSwipe
-    // this.refer.current.handleRightSwipe(-(windowHeight * 0.06 * 2 + 10));
     return (
       <SwipeRow
-        // ref={ref => this.rowRefs.set(this.props.num, ref)}
-        // ref={this.refer}
+        ref={ref => (this.refer = ref)}
+        // onRowOpen={() => this.setState({opened: true})}
+        // onRowClose={() => this.setState({opened: false})}
+        stopLeftSwipe={10}
+        stopRightSwipe={-(windowHeight * 0.06 * 2 + 15)}
+        // swipeToOpenPercent={-50}
         rightOpenValue={-(windowHeight * 0.06 * 2 + 10)}>
         <View style={styles.behindContainer}>
           <TouchableOpacity
             style={styles.behindTouch}
-            onPress={() => this.props.openModalByEdit(this.props.num - 1)}>
+            onPress={() =>
+              this.props.openModalByEdit(this.props.num - 1, this.props.carNum)
+            }>
             <Text style={styles.behindBtn}>Засах</Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -42,7 +46,6 @@ class Number extends React.Component {
             <Text style={styles.behindBtn}>Устгах</Text>
           </TouchableOpacity>
         </View>
-
         <View style={styles.container}>
           <View style={styles.idContainer}>
             <Text style={{color: '#707070'}}>{this.props.num}</Text>
@@ -59,8 +62,15 @@ class Number extends React.Component {
               </Text>
             </View>
           </View>
-          <TouchableOpacity style={{width: 30, alignItems: 'flex-end'}}>
-            <Icon name="md-more" size={25} color="#C4C4C4" />
+          <TouchableOpacity
+            style={{width: 30, alignItems: 'flex-end'}}
+            onPress={() =>
+              this.refer.isOpen
+                ? //this.state.opened
+                  this.refer.closeRow()
+                : this.refer.manuallySwipeRow(-(windowHeight * 0.06 * 2 + 10))
+            }>
+            <Icon name="dots-vertical" size={25} color="#C4C4C4" />
           </TouchableOpacity>
         </View>
       </SwipeRow>
@@ -108,7 +118,7 @@ const styles = StyleSheet.create({
   behindBtn: {
     fontFamily: 'Roboto-Regular',
     color: '#fff',
-    fontSize: 13,
+    fontSize: behindBtnFontSize,
   },
   behindTouch: {
     width: windowHeight * 0.055,
@@ -123,7 +133,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: windowHeight * 0.06 * 2 + 7,
+    width: windowHeight * 0.06 * 2,
   },
 });
 

@@ -79,6 +79,16 @@ target 'Post' do
 
   pod 'BVLinearGradient', :path => '../node_modules/react-native-linear-gradient'
 
+  pod 'RNReanimated', :path => '../node_modules/react-native-reanimated'
+
+  pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
+
+  pod 'react-native-image-picker', :path => '../node_modules/react-native-image-picker'
+
+  pod 'lottie-ios', :path => '../node_modules/lottie-ios'
+
+  pod 'lottie-react-native', :path => '../node_modules/lottie-react-native'
+
   target 'PostTests' do
     inherit! :complete
     # Pods for testing

@@ -36,16 +36,12 @@ const SignUp = props => {
               </Text>
             </View>
             <View style={styles.center}>
-              <Input title="Таны нэр" type="carNum" onActive={() => null} />
-              <Input
-                title="Утасны дугаар"
-                type="number"
-                onActive={() => null}
-              />
+              <Input title="Таны нэр" type="carNum" onFocus={() => null} />
+              <Input title="Утасны дугаар" type="number" onFocus={() => null} />
               <Input
                 title="Тээврийн хэрэгслийн дугаар"
                 type="carNum"
-                onActive={() => null}
+                onFocus={() => null}
               />
               <View style={styles.nuuts}>
                 <View style={styles.zuragOruulah}>

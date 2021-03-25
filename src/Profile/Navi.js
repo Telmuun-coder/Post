@@ -1,5 +1,6 @@
 import React from 'react';
-import {createDrawerNavigator} from '@react-navigation/drawer';
+import {View} from 'react-native';
+import {createDrawerNavigator, DrawerItemList} from '@react-navigation/drawer';
 import {NavigationContainer} from '@react-navigation/native';
 import Profile from './index';
 import Login from '../Login';
@@ -20,11 +21,9 @@ const Navi = () => {
         activeTintColor: '#FFFFFF',
         inactiveTintColor: '#FFFFFF',
       }}
-      screenOptions={
-        {
-          //   swipeEnabled: false,
-        }
-      }>
+      screenOptions={{
+        swipeEnabled: false,
+      }}>
       <Drawer.Screen
         name="Profile"
         component={Profile}
@@ -32,10 +31,9 @@ const Navi = () => {
           drawerLabel: 'НҮҮР ХУУДАС',
         }}
       />
-
       <Drawer.Screen name="EditInfo" component={EditInfo} />
       <Drawer.Screen name="ChangePass" component={ChangePass} />
-      <Drawer.Screen name="Login" component={Login} />
+      {/* <Drawer.Screen name="Login" component={Login} /> */}
     </Drawer.Navigator>
   );
 };

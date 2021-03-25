@@ -39,17 +39,17 @@ const ChangePass = props => {
               <Input
                 title="Шинэ нууц үг"
                 type="password"
-                onActive={() => null}
+                onFocus={() => null}
               />
               <Input
                 title="Шинэ нууц үг давтах"
                 type="password"
-                onActive={() => null}
+                onFocus={() => null}
               />
               <Input
                 title="Хуучин нууц үг"
                 type="password"
-                onActive={() => null}
+                onFocus={() => null}
               />
             </View>
             <View style={styles.buttons}>

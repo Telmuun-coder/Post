@@ -14,18 +14,42 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import Button from '../Components/Button';
 import Input from '../Components/Input';
 import Check from '../Components/Check';
+import {AuthContext} from '../Components/AuthContext.js';
+import Loader from '../Components/Loader';
 const windowHeight = Dimensions.get('window').height;
 
 const Login = props => {
   const [head, headTogle] = useState(true);
+  const {login} = React.useContext(AuthContext);
+  const [phoneNumber, setPhoneNumber] = useState('99882753');
+  const [password, setPassword] = useState('pass');
+  const [loader, setLoader] = useState(false);
   return (
     <SafeAreaView style={styles.containerView}>
       <StatusBar barStyle="white-content" />
+      <Loader visible={loader} />
       {true && <View style={styles.head} />}
       <View style={styles.center}>
         <View style={{justifyContent: 'space-between', flex: 2}}>
-          <Input title="Нэвтрэх дугаар" type="number" onActive={() => null} />
-          <Input title="Нууц үг" type="password" onActive={() => null} />
+          <Text style={{color: 'red', alignSelf: 'center'}}>
+            I'm your error.
+          </Text>
+          <Input
+            title="Нэвтрэх дугаар"
+            type="number"
+            onFocus={() => null}
+            value={phoneNumber}
+            onChange={setPhoneNumber}
+            focus={false}
+          />
+          <Input
+            title="Нууц үг"
+            type="password"
+            onFocus={() => null}
+            value={password}
+            onChange={setPassword}
+            focus={false}
+          />
         </View>
         <View style={styles.nuutsInside}>
           <View style={styles.nuuts}>
@@ -51,7 +75,13 @@ const Login = props => {
       <View style={styles.buttons}>
         <Button
           title="НЭВТРЭХ"
-          onClick={() => props.navigation.navigate('Navi')}
+          onClick={async () => {
+            setLoader(true);
+            await setTimeout(() => {
+              setLoader(false);
+              login(phoneNumber, password);
+            }, 500);
+          }}
         />
         <TouchableOpacity onPress={() => props.navigation.navigate('SignUp')}>
           <Text style={{color: '#707070', fontSize: 12}}>

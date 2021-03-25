@@ -8,8 +8,8 @@ const windowHeight = Dimensions.get('window').height;
 const Button = props => {
   return (
     <TouchableHighlight
-      onPress={() => alert('hey')}
-      style={{borderRadius: 50}}
+      disabled={props.disabled}
+      style={[{borderRadius: 50}, props.disabled && styles.dis]}
       onPress={() => props.onClick()}>
       <LinearGradient
         useAngle={true}
@@ -26,12 +26,15 @@ const Button = props => {
 const styles = StyleSheet.create({
   linearGradient: {
     width: windowWidth * 0.7,
-    height: 50,
+    height: windowHeight * 0.065,
     paddingLeft: 15,
     paddingRight: 15,
     borderRadius: 50,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  dis: {
+    opacity: 0.5,
   },
   title: {
     color: 'white',

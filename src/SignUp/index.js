@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -9,18 +9,46 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Dimensions,
+  Platform,
+  Image,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Button from '../Components/Button';
 import Input from '../Components/Input';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
+import ImagePicker from 'react-native-image-picker';
+import {AuthContext} from '../Components/AuthContext.js';
+import Loader from '../Components/Loader';
 
 const windowHeight = Dimensions.get('window').height;
+const windowWidth = Dimensions.get('window').width;
+
+const options = {
+  title: 'Нүүр зураг сонгох',
+  takePhotoButtonTitle: 'Зураг авч оруулах...',
+  chooseFromLibraryButtonTitle: 'Зургийн цомгоос сонгох...',
+  quality: 1,
+  // maxWidth: 500,
+  // maxHeight: 150,
+};
 
 const SignUp = props => {
+  const [url, setUrl] = useState('sda');
+  const getAvatar = () => {
+    ImagePicker.showImagePicker(options, res => {
+      if (res.didCancel) console.warn('really bitch');
+      else if (res.error) console.warn(res.error);
+      else setUrl(res.uri);
+    });
+  };
+  const {register} = React.useContext(AuthContext);
+  const [phoneNumber, setPhoneNumber] = useState('99882753');
+  const [password, setPassword] = useState('pass');
+  const [loader, setLoader] = useState(false);
   return (
     <SafeAreaView style={styles.containerView}>
       <StatusBar barStyle="white-content" />
+      <Loader visible={loader} />
       <KeyboardAvoidingView
         style={{flex: 1}}
         enabled
@@ -34,41 +62,69 @@ const SignUp = props => {
               <Text style={{color: '#707070', fontSize: 16}}>БҮРТГҮҮЛЭХ</Text>
             </View>
             <View style={styles.center}>
-              <Input title="Таны нэр" type="carNum" onActive={() => null} />
+              <Input
+                title="Таны нэр"
+                type="carNum"
+                onFocus={() => null}
+                onChange={() => null}
+              />
               <Input
                 title="Утасны дугаар"
                 type="number"
-                onActive={() => null}
+                value={phoneNumber}
+                onFocus={() => null}
+                onChange={setPhoneNumber}
               />
-              <Input title="Нууц үг" type="password" onActive={() => null} />
+              <Input
+                title="Нууц үг"
+                type="password"
+                onFocus={() => null}
+                value={password}
+                onChange={setPassword}
+              />
               <Input
                 title="Нууц үг давтах"
                 type="password"
-                onActive={() => null}
+                onFocus={() => null}
+                onChange={() => null}
               />
               <Input
                 title="Тээврийн хэрэгслийн дугаар"
                 type="carNum"
-                onActive={() => null}
+                onFocus={() => null}
+                onChange={() => null}
               />
-              <View style={styles.nuuts}>
-                <View style={styles.zuragOruulah}>
-                  <Text style={styles.headTitle}>Зураг оруулах</Text>
-                  <TouchableOpacity
-                    style={{alignSelf: 'center', marginTop: '18%'}}>
-                    <Icon
-                      name="ios-add-circle-outline"
-                      size={24}
-                      color="#C4C4C4"
-                    />
-                  </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.zuragOruulah}
+                onPress={() => getAvatar()}>
+                <Text style={styles.headTitle}>Зураг оруулах</Text>
+                <View
+                  style={{
+                    alignSelf: 'center',
+                    marginTop: '18%',
+                    //backgroundColor: 'red',
+                  }}>
+                  <Icon
+                    name="ios-add-circle-outline"
+                    size={24}
+                    color="#C4C4C4"
+                  />
                 </View>
-              </View>
+                <Image style={styles.avatar} source={{uri: url}} />
+              </TouchableOpacity>
             </View>
             <View style={styles.buttons}>
               <Button
                 title="БҮРТГҮҮЛЭХ"
-                onClick={() => props.navigation.navigate('Login')}
+                onClick={async () => {
+                  register(phoneNumber, password);
+                  setLoader(true);
+                  await setTimeout(() => {
+                    setLoader(false);
+                    props.navigation.pop();
+                  }, 1000);
+                }}
               />
               <TouchableOpacity
                 onPress={() => props.navigation.navigate('Login')}>
@@ -85,6 +141,15 @@ const SignUp = props => {
 };
 
 const styles = StyleSheet.create({
+  avatar: {
+    width: windowWidth * 0.3,
+    height: windowWidth * 0.3,
+    borderRadius: windowWidth * 0.3,
+    position: 'absolute',
+    top: 20,
+    left: windowWidth * 0.2,
+    zIndex: 1,
+  },
   containerView: {
     backgroundColor: 'white',
     flex: 1,
@@ -95,23 +160,24 @@ const styles = StyleSheet.create({
   },
 
   buttons: {
-    flex: 1,
-    //backgroundColor: 'red',
+    height: '15%',
+    // backgroundColor: 'red',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 40,
+    padding: 10,
     marginTop: 5,
-    minHeight: 70,
   },
 
   center: {
-    flex: 10,
-    marginTop: 20,
+    // flex: 10,
+    height: '70%',
+    // marginTop: 20,
     // backgroundColor: 'yellow',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
   head: {
-    flex: 1,
+    height: '7%',
     // backgroundColor: 'gray',
     width: '100%',
     alignItems: 'center',
@@ -125,9 +191,10 @@ const styles = StyleSheet.create({
   },
   zuragOruulah: {
     backgroundColor: '#F7F7F7',
+    // backgroundColor: 'purple',
     height: 150,
+    width: windowWidth * 0.7,
     borderRadius: 20,
-    marginBottom: 40,
   },
 });
 
