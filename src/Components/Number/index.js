@@ -6,7 +6,7 @@ import {
   Dimensions,
   TouchableOpacity,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/Feather';
 import {SwipeRow} from 'react-native-swipe-list-view';
 
 const windowWidth = Dimensions.get('window').width;
@@ -25,13 +25,17 @@ class Number extends React.Component {
   render() {
     return (
       <SwipeRow
+        // style={{backgroundColor: 'red', marginVertical: 20}}
         ref={ref => (this.refer = ref)}
         // onRowOpen={() => this.setState({opened: true})}
         // onRowClose={() => this.setState({opened: false})}
-        stopLeftSwipe={10}
-        stopRightSwipe={-(windowHeight * 0.06 * 2 + 15)}
+        disableLeftSwipe
+        disableRightSwipe
+        stopLeftSwipe={20}
+        stopRightSwipe={-(60 * 2 + 15)}
+        directionalDistanceChangeThreshold={10}
         // swipeToOpenPercent={-50}
-        rightOpenValue={-(windowHeight * 0.06 * 2 + 10)}>
+        rightOpenValue={-(60 * 2 + 10)}>
         <View style={styles.behindContainer}>
           <TouchableOpacity
             style={styles.behindTouch}
@@ -46,7 +50,7 @@ class Number extends React.Component {
             <Text style={styles.behindBtn}>Устгах</Text>
           </TouchableOpacity>
         </View>
-        <View style={styles.container}>
+        <View style={[styles.container]}>
           <View style={styles.idContainer}>
             <Text style={{color: '#707070'}}>{this.props.num}</Text>
           </View>
@@ -68,9 +72,9 @@ class Number extends React.Component {
               this.refer.isOpen
                 ? //this.state.opened
                   this.refer.closeRow()
-                : this.refer.manuallySwipeRow(-(windowHeight * 0.06 * 2 + 10))
+                : this.refer.manuallySwipeRow(-(60 * 2 + 10))
             }>
-            <Icon name="dots-vertical" size={25} color="#C4C4C4" />
+            <Icon name="more-vertical" size={25} color="#C4C4C4" />
           </TouchableOpacity>
         </View>
       </SwipeRow>
@@ -81,7 +85,8 @@ class Number extends React.Component {
 const styles = StyleSheet.create({
   container: {
     width: windowWidth * 0.9,
-    height: windowHeight * 0.06,
+    // height: windowHeight * 0.06,
+    height: 60,
     flexDirection: 'row',
     justifyContent: 'space-between',
     backgroundColor: 'white',
@@ -121,8 +126,10 @@ const styles = StyleSheet.create({
     fontSize: behindBtnFontSize,
   },
   behindTouch: {
-    width: windowHeight * 0.055,
-    height: windowHeight * 0.055,
+    // width: windowHeight * 0.055,
+    // height: windowHeight * 0.055,
+    width: 50,
+    height: 50,
     backgroundColor: '#FD7578',
     justifyContent: 'center',
     alignItems: 'center',
@@ -133,7 +140,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: windowHeight * 0.06 * 2,
+    width: 60 * 2,
   },
 });
 

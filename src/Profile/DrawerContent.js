@@ -46,12 +46,8 @@ const DrawerContent = props => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.item}
-            onPress={async () => {
-              setLoader(true);
-              await setTimeout(() => {
-                setLoader(false);
-                logout();
-              }, 500);
+            onPress={() => {
+              logout();
               props.navigation.toggleDrawer();
             }}>
             <Text style={styles.label}>ГАРАХ</Text>

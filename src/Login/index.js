@@ -16,6 +16,8 @@ import Input from '../Components/Input';
 import Check from '../Components/Check';
 import {AuthContext} from '../Components/AuthContext.js';
 import Loader from '../Components/Loader';
+import { request } from '../../tools';
+import AsyncStorage from '@react-native-community/async-storage';
 const windowHeight = Dimensions.get('window').height;
 
 const Login = props => {
@@ -24,6 +26,32 @@ const Login = props => {
   const [phoneNumber, setPhoneNumber] = useState('99882753');
   const [password, setPassword] = useState('pass');
   const [loader, setLoader] = useState(false);
+
+  const newLogin = async () => {
+    setLoader(true);
+
+    const data = {
+      username: phoneNumber,
+      password: password,
+      systemName: 'redPoint',
+      // device: UserUtil.getDeviceInfo(),
+    }
+
+    try{
+      const res = await request('post', 'redpointapi/user/login', data, 'login: ', () => setLoader(false));
+      const tok = ['token', res.token];
+      const userId = ['userId', res.userId];
+      const userAuthInfo = ['userAuthInfo', JSON.stringify({username: phoneNumber, password})];
+      AsyncStorage.multiSet([tok, userId, userAuthInfo]);
+      setLoader(false);
+      login(res.token);
+    }catch(e){
+      console.log("login error in second catch", e);
+      setLoader(false);
+    }
+  }
+
+
   return (
     <SafeAreaView style={styles.containerView}>
       <StatusBar barStyle="white-content" />
@@ -31,9 +59,9 @@ const Login = props => {
       {true && <View style={styles.head} />}
       <View style={styles.center}>
         <View style={{justifyContent: 'space-between', flex: 2}}>
-          <Text style={{color: 'red', alignSelf: 'center'}}>
+          {/* <Text style={{color: 'red', alignSelf: 'center'}}>
             I'm your error.
-          </Text>
+          </Text> */}
           <Input
             title="Нэвтрэх дугаар"
             type="number"
@@ -75,13 +103,7 @@ const Login = props => {
       <View style={styles.buttons}>
         <Button
           title="НЭВТРЭХ"
-          onClick={async () => {
-            setLoader(true);
-            await setTimeout(() => {
-              setLoader(false);
-              login(phoneNumber, password);
-            }, 500);
-          }}
+          onClick={newLogin}
         />
         <TouchableOpacity onPress={() => props.navigation.navigate('SignUp')}>
           <Text style={{color: '#707070', fontSize: 12}}>

@@ -15,37 +15,62 @@ import Number from '../Components/Number';
 import Button from '../Components/Button';
 import Icon from 'react-native-vector-icons/AntDesign';
 import Input from '../Components/Input';
+import { request } from '../../tools';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 class Profile extends React.Component {
-  state = {
-    cars: [
-      {
-        carNum: '11-11УНА',
-        data: '2222.22.22',
-        state: true,
-      },
-      {
-        carNum: '',
-        data: '',
-        state: true,
-      },
-    ],
-    showModal: false,
-    inputActive: false,
-    add: true,
-    addingNumber: '',
-    indexOfEdit: null,
-    oldCarNum: null,
-    danger: false,
-  };
+  constructor(props){
+    super(props);
+
+    this.state = {
+      userInfo: null,
+      cars: [
+        {
+          carNum: '11-11УНА',
+          data: '2222.22.22',
+          state: true,
+        },
+        {
+          carNum: '',
+          data: '',
+          state: true,
+        },
+      ],
+      showModal: false,
+      inputActive: false,
+      add: true,
+      addingNumber: '',
+      indexOfEdit: null,
+      oldCarNum: null,
+      danger: false,
+    };
+
+    this.getUserInfo();
+  }
+
+  getUserInfo = async () => {
+
+    try{
+      const res = await request('get', 'redpointapi/user/data', null, 'get userData: ', () => null);
+      this.setState({ userInfo: res.data});
+      AsyncStorage.setItem('userInfo', JSON.stringify(res.data));
+      // const tok = ['token', res.token];
+      // const user = ['userId', res.userId];
+      // AsyncStorage.multiSet([tok, user]);
+    }catch(e){
+      console.log("login error in second catch", e);
+    }
+  }
+
   isContain = number => {
     let t = this.state.cars.filter(e => e.carNum === number.toUpperCase());
     return t.length === 0 ? true : false;
     // return t.length;
   };
+
   carNumChecker = num => {
     if (
       num.length >= 7 &&
@@ -55,6 +80,7 @@ class Profile extends React.Component {
       return true;
     else return false;
   };
+
   dateFormatter = oldDate => {
     const today = new Date();
     const d = new Date(
@@ -129,6 +155,7 @@ class Profile extends React.Component {
       return {cars: [item, ...Prev.cars]};
     });
   };
+
   deleteItem = index => {
     Alert.alert(
       'Анхаар!',
@@ -168,6 +195,7 @@ class Profile extends React.Component {
         };
     });
   };
+
   submitModal = () => {
     this.state.add ? this.addItem() : this.updateItem();
     this.closeModal();
@@ -182,18 +210,13 @@ class Profile extends React.Component {
           animationType="slide"
           visible={this.state.showModal}
           transparent={true}>
-          <View
-            style={styles.shadow}
-            onStartShouldSetResponder={() => this.closeModal()}
-          />
-          <View
-            style={[
-              styles.ModalContainer,
-              this.state.inputActive && styles.active,
-            ]}>
-            <Text style={styles.ModalTitle}>
-              ДУГААР{this.state.add ? ' НЭМЭХ' : ' ЗАСАХ'}
-            </Text>
+
+          <View style={styles.shadow} onStartShouldSetResponder={() => this.closeModal()}/>
+
+          <View style={[ styles.ModalContainer, this.state.inputActive && styles.active ]}>
+
+            <Text style={styles.ModalTitle}> ДУГААР{this.state.add ? ' НЭМЭХ' : ' ЗАСАХ'} </Text>
+
             <Input
               danger={this.state.danger}
               focus={true}
@@ -204,30 +227,37 @@ class Profile extends React.Component {
               onFocus={this.modalMoveUp}
               onChange={this.gettingNewnumber}
             />
+
             {this.state.add && (
               <View style={{alignItems: 'center'}}>
                 <Text style={styles.ModalTailbar}>
-                  {
-                    'Таны нэмсэн тээврийн хэрэгслийн дугаар\n 7 хоногын дараа уг жагсаалтаас\n устгагдах болно.'
-                  }
+                  { 'Таны нэмсэн тээврийн хэрэгслийн дугаар\n 7 хоногын дараа уг жагсаалтаас\n устгагдах болно.' }
                 </Text>
               </View>
             )}
+
             <Button
               disabled={this.state.danger}
               title={this.state.add ? 'БҮРТГҮҮЛЭХ' : 'ЗАСАХ'}
               onClick={() => this.submitModal()}
             />
+
           </View>
+
         </Modal>
+
+
         <View style={styles.picContainer}>
-          <ProPic />
+          <ProPic userInfo={this.state.userInfo}/>
         </View>
+
         <TouchableOpacity
           style={styles.setting}
           onPress={() => this.props.navigation.toggleDrawer()}>
           <Icon name="setting" size={25} color="#C4C4C4" />
         </TouchableOpacity>
+
+
         <ScrollView
           // showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContainer}
@@ -253,9 +283,11 @@ class Profile extends React.Component {
             })
           )}
         </ScrollView>
+
         <View style={styles.btnContainer}>
           <Button title="Дугаар нэмэх" onClick={this.openModal} />
         </View>
+        
       </View>
     );
   }

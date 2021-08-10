@@ -14,6 +14,7 @@ import Drawer from './src/Profile/Drawer';
 import Loader from './src/Components/Loader';
 import {AuthContext} from './src/Components/AuthContext.js';
 import {set} from 'react-native-reanimated';
+import AsyncLocalStorage from '@react-native-community/async-storage';
 
 const Stack = createStackNavigator();
 
@@ -39,40 +40,39 @@ const AuthStackScreen = () => {
 
 const App = () => {
   const [loading, setLoader] = useState(true);
-  const [user, setUser] = useState(false);
+  const [token, setToken] = useState(null);
   useEffect(() => {
-    setTimeout(() => setLoader(!loading), 1000);
-    // setTimeout(() => setUser({}), 1000);
+    const isLogged = async () => {
+      const token = await AsyncLocalStorage.getItem('token');
+      if(token) setToken(token);
+      setLoader(false);
+    };
+    isLogged();
   }, []);
 
   const auth = React.useMemo(
     () => ({
-      login: (phoneNumber, password) => {
-        //console.warn(phoneNumber + ', ' + password);
-        setUser(true);
-      },
-      logout: () => setUser(false), //console.warn('Logout'),
+      login: (token) => setToken(token),
+      logout: async () => {
+        await AsyncLocalStorage.multiRemove(['token', 'userId', 'userAuthInfo','userInfo']);
+        setToken(null);
+      }, //console.warn('Logout'),
       register: (phoneNumber, password) =>
         console.warn(phoneNumber + ', ' + password),
     }),
     [],
   );
+
   return (
     <AuthContext.Provider value={auth}>
       <NavigationContainer>
-        {/* <AuthStackScreen /> */}
         {loading ? (
-          <Loader visible={loading} />
-        ) : user ? (
+          <Loader visible={loading}/>
+        ) : token ? (
           <Navi />
         ) : (
           <AuthStackScreen />
         )}
-        {/* <Stack.Screen
-          name="Navi"
-          component={Navi}
-          options={{headerShown: false}}
-        /> */}
       </NavigationContainer>
     </AuthContext.Provider>
   );
