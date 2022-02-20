@@ -13,7 +13,7 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 const behindBtnFontSize = windowWidth < 410 ? 10 : 12;
 
-class Number extends React.Component {
+class OwnNumber extends React.Component {
   constructor(props) {
     super(props);
 
@@ -25,53 +25,42 @@ class Number extends React.Component {
 
   render() {
     return (
-      <SwipeRow
-        ref={ref => (this.refer = ref)}
-        disableLeftSwipe
-        disableRightSwipe
-        stopLeftSwipe={20}
-        stopRightSwipe={-(60 * 2 + 15)}
-        directionalDistanceChangeThreshold={10}
-        // swipeToOpenPercent={-50}
-        rightOpenValue={-(60 * 2 + 10)}>
+      <SwipeRow ref={ref => (this.refer = ref)} disableLeftSwipe disableRightSwipe stopLeftSwipe={20} stopRightSwipe={-(60 * 2 + 15)} directionalDistanceChangeThreshold={10} rightOpenValue={-(60 * 2 + 10)}>
+
         <View style={styles.behindContainer}>
-          <TouchableOpacity
-            style={styles.behindTouch}
-            onPress={this.props.openModalByEdit}>
+          <TouchableOpacity style={styles.behindTouch} onPress={this.props.editItem}>
             <Text style={styles.behindBtn}>Засах</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={this.props.deleteItem}
-            style={[styles.behindTouch, {backgroundColor: '#B00265'}]}>
+          <TouchableOpacity onPress={this.props.deleteItem} style={[styles.behindTouch, {backgroundColor: '#B00265'}]}>
             <Text style={styles.behindBtn}>Устгах</Text>
           </TouchableOpacity>
         </View>
+
+
         <View style={[styles.container]}>
+
           <View style={styles.idContainer}>
             <Text style={{color: '#707070'}}>{this.props.num}</Text>
           </View>
+
           <View style={styles.content}>
-            <View style={styles.timeContainer}>
-              <Text style={{color: '#BFBFBF'}}>Дуусах хугацаа</Text>
-              <Text style={{color: '#707070', fontSize: 16}}>{this.props.endDate}</Text>
-            </View>
+            {/* <View style={[styles.timeContainer, {opacity: 0}]}> */}
+              {/* <Text style={{color: '#BFBFBF'}}>Дуусах хугацаа</Text> */}
+              {/* <Text style={{color: '#707070', fontSize: 16}}>{this.props.endDate}</Text> */}
+            {/* </View> */}
             <View style={styles.stateContainer}>
               <Text style={{color: '#707070', fontSize: 18, fontWeight: 'bold'}}>{this.props.carNum}</Text>
-              {/* <Text style={{color: this.props.state ? '#44CB33' : '#BFBFBF', opacity: 0}}>
-                {this.props.state ? 'ирсэн' : 'ирээгүй'}
-              </Text> */}
             </View>
           </View>
-          <TouchableOpacity
-            style={{width: 30, alignItems: 'flex-end'}}
-            onPress={() =>
+
+          <TouchableOpacity style={{width: 30, alignItems: 'flex-end'}} onPress={() =>
               this.refer.isOpen
-                ? //this.state.opened
-                  this.refer.closeRow()
+                ? this.refer.closeRow()
                 : this.refer.manuallySwipeRow(-(60 * 2 + 10))
             }>
             <Icon name="more-vertical" size={25} color="#C4C4C4" />
           </TouchableOpacity>
+
         </View>
       </SwipeRow>
     );
@@ -142,4 +131,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Number;
+export default OwnNumber;

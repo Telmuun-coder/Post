@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useLayoutEffect} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Dimensions,
+  Image
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Button from '../Components/Button';
@@ -23,9 +24,14 @@ const windowHeight = Dimensions.get('window').height;
 const Login = props => {
   const [head, headTogle] = useState(true);
   const {login} = React.useContext(AuthContext);
-  const [phoneNumber, setPhoneNumber] = useState('99882753');
-  const [password, setPassword] = useState('pass');
+  const [phoneNumber, setPhoneNumber] = useState(''); //'99882753'
+  const [password, setPassword] = useState(''); //'Telmuun8989'
   const [loader, setLoader] = useState(false);
+  const [remember, setRemember] = useState(true);
+
+  const save = (saveOrNot) => {
+    setRemember(saveOrNot);
+  }
 
   const newLogin = async () => {
     setLoader(true);
@@ -42,7 +48,10 @@ const Login = props => {
       const tok = ['token', res.token];
       const userId = ['userId', res.userId];
       const userAuthInfo = ['userAuthInfo', JSON.stringify({username: phoneNumber, password})];
-      AsyncStorage.multiSet([tok, userId, userAuthInfo]);
+
+      if(remember) AsyncStorage.multiSet([tok, userId, userAuthInfo]);
+      else AsyncStorage.multiSet([tok, userId]);
+
       setLoader(false);
       login(res.token);
     }catch(e){
@@ -51,17 +60,26 @@ const Login = props => {
     }
   }
 
+  useLayoutEffect(() => {
+    const fillData = async () => {
+      let userData = await AsyncStorage.getItem('userAuthInfo');
+      if(userData){
+        userData = JSON.parse(userData);
+        setPhoneNumber(userData.username);
+        setPassword(userData.password);
+      }
+    };
+    fillData();
+  },[])
+
 
   return (
-    <SafeAreaView style={styles.containerView}>
-      <StatusBar barStyle="white-content" />
-      <Loader visible={loader} />
-      {true && <View style={styles.head} />}
-      <View style={styles.center}>
-        <View style={{justifyContent: 'space-between', flex: 2}}>
-          {/* <Text style={{color: 'red', alignSelf: 'center'}}>
-            I'm your error.
-          </Text> */}
+    <SafeAreaView style={{flex: 1}}>
+     
+      <View style={styles.container}>
+
+          <Image source={require('../images/Parking.png')} style={{width: 271, height: 83, marginBottom: 30, tintColor: 'black'}}/>
+
           <Input
             title="Нэвтрэх дугаар"
             type="number"
@@ -78,57 +96,38 @@ const Login = props => {
             onChange={setPassword}
             focus={false}
           />
-        </View>
+
+
         <View style={styles.nuutsInside}>
           <View style={styles.nuuts}>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <Check />
-              <Text style={{color: '#707070', fontSize: 10}}>
-                {'Сануулах'.toUpperCase()}
-              </Text>
-            </View>
+            <Check onPress={save} remember={remember}/>
             <TouchableOpacity>
-              <Text style={{color: '#707070', fontSize: 10}}>
+              {/* <Text style={{color: '#707070', fontSize: 10}}>
                 {'Нууц үг мартсан'.toUpperCase()}
-              </Text>
+              </Text> */}
             </TouchableOpacity>
           </View>
-        </View>
-      </View>
-      <View style={styles.buttons}>
+          </View>
+
+
         <Button
           title="НЭВТРЭХ"
           onClick={newLogin}
         />
-        <TouchableOpacity onPress={() => props.navigation.navigate('SignUp')}>
-          <Text style={{color: '#707070', fontSize: 12}}>
-            {'Бүртгүүлэх'.toUpperCase()}
-          </Text>
-        </TouchableOpacity>
-      </View>
+
+        </View>
+
+      <Loader visible={loader} />
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  head: {
-    flex: 7,
-    // backgroundColor: 'black',
-    //height: 100,
-    width: '100%',
-  },
-  containerView: {
+  container: {
     backgroundColor: 'white',
     flex: 1,
-    // height: windowHeight,
     alignItems: 'center',
     justifyContent: 'center',
-    flexDirection: 'column',
   },
   nuuts: {
     marginTop: 20,
@@ -138,21 +137,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   nuutsInside: {
-    flex: 2,
-    // backgroundColor: 'red',
+    width: '65%',
+    height: 50,
+    marginBottom: 20
   },
   buttons: {
     flex: 1,
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 100,
-    minHeight: 80,
-  },
-  center: {
-    flex: 2,
-    // backgroundColor: 'green',
-    justifyContent: 'space-between',
-    minHeight: 220,
+    marginBottom: 50,
+    minHeight: 50,
   },
 });
 

@@ -1,14 +1,14 @@
-import React, {useState} from 'react';
-import {View, StyleSheet} from 'react-native';
+import React from 'react';
+import {Text, StyleSheet, TouchableOpacity, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
 const Checker = props => {
-  const [fill, setFill] = useState(true);
   return (
-    <View
-      style={styles.checkBox}
-      onStartShouldSetResponder={() => setFill(fill ? false : true)}>
-      {fill && (
+    <TouchableOpacity
+      style={styles.container}
+      onPress={() => props.onPress(!props.remember)}>
+      <View  style={styles.checkBox}>
+      {props.remember && (
         <LinearGradient
           useAngle={true}
           angle={170}
@@ -17,10 +17,17 @@ const Checker = props => {
           style={styles.linearGradient}
         />
       )}
-    </View>
+        </View>
+       <Text style={{color: '#707070', fontSize: 10}}>САНУУЛАХ</Text>
+    </TouchableOpacity>
   );
 };
 const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   checkBox: {
     borderWidth: 1,
     width: 24,
@@ -35,6 +42,7 @@ const styles = StyleSheet.create({
     width: 14,
     height: 14,
     borderRadius: 50,
+    
   },
 });
 

@@ -7,6 +7,7 @@ import Login from '../Login';
 import EditInfo from '../EditInfo';
 import ChangePass from '../ChangePass';
 import DrawerContent from './DrawerContent';
+import EditUserCarList from '../EditUserCarList';
 
 const Drawer = createDrawerNavigator();
 
@@ -31,8 +32,9 @@ const Navi = () => {
           drawerLabel: 'НҮҮР ХУУДАС',
         }}
       />
-      <Drawer.Screen name="EditInfo" component={EditInfo} />
-      <Drawer.Screen name="ChangePass" component={ChangePass} />
+      <Drawer.Screen name="EditInfo" component={EditUserCarList} />
+      {/* <Drawer.Screen name="EditInfo" component={EditInfo} /> */}
+      {/* <Drawer.Screen name="ChangePass" component={ChangePass} /> */}
       {/* <Drawer.Screen name="Login" component={Login} /> */}
     </Drawer.Navigator>
   );

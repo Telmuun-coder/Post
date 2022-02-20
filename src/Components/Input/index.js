@@ -7,7 +7,7 @@ const windowHeight = Dimensions.get('window').height;
 const Input = props => {
   const [val, setVal] = useState(props.value ? props.value : '');
   return (
-    <View style={[styles.inputContainer, props.danger && styles.danger]}>
+    <View style={[styles.inputContainer, props.danger && styles.danger, props.style && props.style]}>
       <Text style={styles.type}>{props.title}</Text>
       <TextInput
         onFocus={() => {
@@ -27,6 +27,7 @@ const Input = props => {
         value={val}
         keyboardType={props.type === 'number' ? 'phone-pad' : 'default'}
         secureTextEntry={props.type === 'password' ? true : false}
+        autoCapitalize={props.autoCapitalize ? props.autoCapitalize : null}
       />
     </View>
   );
@@ -40,6 +41,7 @@ const styles = StyleSheet.create({
     height: windowHeight * 0.065,
     paddingTop: 3,
     paddingHorizontal: 20,
+    marginBottom: 20,
     borderRadius: 50,
   },
   type: {

@@ -54,7 +54,7 @@ const App = () => {
     () => ({
       login: (token) => setToken(token),
       logout: async () => {
-        await AsyncLocalStorage.multiRemove(['token', 'userId', 'userAuthInfo','userInfo']);
+        await AsyncLocalStorage.multiRemove(['token', 'userId', 'userAuthInfo','userInfo', 'userCars']);
         setToken(null);
       }, //console.warn('Logout'),
       register: (phoneNumber, password) =>

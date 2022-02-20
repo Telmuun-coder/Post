@@ -30,6 +30,35 @@ export const request = async (type, url, data, reqName, callback) => {
   });
 };
 
+export const requestParking = async (type, url, data, reqName, callback) => {
+  // const token = await AsyncStorage.getItem('token');
+  axios.defaults.headers = {Authorization: null};
+
+  // console.log(Constants.parking + url);
+
+  return new Promise(async (resolve, reject) => {
+    try {
+      let res = null;
+      if (type == 'get')
+        res = await axios.get(Constants.parking + url);
+      else if (type == 'post')
+        res = await axios.post(Constants.parking + url, data && data);
+      else if(type == 'put')
+        res = await axios.put(Constants.parking + url, data && data);
+
+      if (res.data.status == '000') {
+        // console.log(res);
+        resolve(res.data);
+      } else {
+        reject(res.data.message);
+      }
+    } catch (e) {
+      callback();
+      console.log('error by ' + reqName, e);
+    }
+  });
+};
+
 export const uploadImage = async (localUrl) => {
   const token = await AsyncStorage.getItem('token');
   axios.defaults.headers = {

@@ -24,9 +24,9 @@ const DrawerContent = props => {
             <Icon name="setting" size={25} color="#FFFFFF" />
           </TouchableOpacity>
         </View>
-        <View style={styles.logoContainer}>
+        {/* <View style={styles.logoContainer}>
           <Text>LOGO</Text>
-        </View>
+        </View> */}
 
         <View style={{height: 200}}>
           <TouchableOpacity
@@ -39,11 +39,11 @@ const DrawerContent = props => {
             onPress={() => props.navigation.navigate('EditInfo')}>
             <Text style={styles.label}>МЭДЭЭЛЭЛ ЗАСАХ</Text>
           </TouchableOpacity>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.item}
             onPress={() => props.navigation.navigate('ChangePass')}>
             <Text style={styles.label}>НУУЦ ҮГ СОЛИХ</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <TouchableOpacity
             style={styles.item}
             onPress={() => {
